@@ -19,7 +19,7 @@ class Unit:
             raise ValueError(f"{self} cannot adopt itself.")
         elif child in self.parentof:
             raise ValueError(
-                f"{self} cannot adopt {child} for {self} is already parent of {child}"
+                f"{self} cannot adopt {child} for {self} is already the parent of {child}"
             )
         else:
             self.parentof.append(child)
@@ -33,7 +33,7 @@ class Unit:
             raise ValueError(f"{self} cannot abandon itself")
         elif child not in self.parentof:
             raise ValueError(
-                f"{self} cannot abandon {child} for {self} is not parent of {child}"
+                f"{self} cannot abandon {child} for {self} is not a parent of {child}"
             )
         else:
             self.parentof.remove(child)
@@ -42,7 +42,7 @@ class Unit:
             print(f"{self} abandoned {child}. Children of {self} are {self.parentof}.")
 
     def _tellfamily(self):
-        print(f"{self} is parent of {self.parentof} and child of {self.childof}.")
+        print(f"{self} is a parent of {self.parentof} and a child of {self.childof}.")
 
 
 units = []
