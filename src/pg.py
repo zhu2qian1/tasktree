@@ -14,7 +14,7 @@ class UnitBase(Unit):
         if child is self:
             raise ValueError(f"{self} cannot adopt itself.")
         elif child in self.__child:
-            raise ValueError(f"{child} is already a child of {self}.")
+            raise ValueError(f"{self} has already adopted {child}.")
         else:
             self.__child.append(child)
             child.__parent.append(self)
@@ -23,31 +23,33 @@ class UnitBase(Unit):
         if child is self:
             raise ValueError(f"{self} cannot abandon itself.")
         elif child not in self.__child:
-            raise ValueError(f"{child} is not a child of {self}.")
+            raise ValueError(f"{self} is not a parent of {child}.")
         else:
             self.__child.remove(child)
             child.__parent.remove(self)
 
     def join(self, parent: Unit) -> None:
         if parent is self:
-            raise ValueError
+            raise ValueError(f"{self} cannot join itself.")
         elif parent in self.__parent:
-            raise ValueError
+            raise ValueError(f"{self} has already joined {parent}.")
         else:
-            pass
+            self.__parent.append(parent)
+            parent.__child.append(self)
 
     def leave(self, parent: Unit) -> None:
         if parent is self:
-            raise ValueError
+            raise ValueError(f"{self} cannot leave itself.")
         elif parent not in self.__parent:
-            raise ValueError
-
+            raise ValueError(f"{self} is not a child of {parent}.")
         else:
-            pass
+            self.__parent.remove(parent)
+            parent.__child.remove(self)
 
 
-class Task:
-    pass
+class Task(UnitBase):
+    def __init__(self) -> None:
+        super().__init__(UnitBase)
 
 
 class Project:
