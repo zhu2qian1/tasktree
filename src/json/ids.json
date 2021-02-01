@@ -1,11 +1,14 @@
 {
     "user": [
-        "ur-xxxxxxxxxxxx"
+        "ur-000000000000"
     ],
     "project": [
-        "pj-xxxxxxxxxxxx"
+        "pj-000000000000"
     ],
-    "tasks": [
-        "tk-xxxxxxxxxxxx"
+    "task": [
+        "tk-000000000000"
+    ],
+    "team": [
+        "tm-000000000000"
     ]
 }
