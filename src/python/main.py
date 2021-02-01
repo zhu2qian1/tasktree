@@ -1,77 +1,95 @@
-from typing import Union
-from datetime import date, datetime
+from json import load, dump
+from typing import Type, Union
+
+path_id_json = ".\\src\\json\\ids.json"
 
 
-class User:
-    def __init__(self, name: str, mail: str = "(No email address provided)"):
-        self.__id = "ur-xxxxxxxxxxxx"
+class Unit:
+    def __init__(self, name: str) -> None:
         self.name: str = name
-        self.mail: str = mail
-        self.profile: str = ""
-        self.affiliation: list = []
-        self.assigned_task: list = []
-        self.assigned_proj: list = []
+        self.__child: list = []
+        self.__parent: list = []
 
 
-class Project:
-    def __init__(
-        self,
-        name: str = "(Unnamede proeject)",
-        goal: str = "(No goal provied)",
-        desc: str = "(No description provided)",
-    ) -> None:
-        self.__id: str = "pj-xxxxxxxxxxxx"
-        self.name: str = name
-        self.goal: str = goal
-        self.desc: str = desc
-        self.isstarted: bool = False
-        self.isfinished: bool = False
-        self.plan: list[date, date] = [None, None]
-        self.duration: list[date, date] = [None, None]
-        self.childof: list = []
-        self.parentof: list = []
+class UnitBase(Unit):
+    def __init__(self, name: str) -> None:
+        super().__init__(name)
+
+    def adopt(self, child: Unit) -> None:
+        if child is self:
+            raise ValueError(f"{self} cannot adopt itself.")
+        elif child in self.__child:
+            raise ValueError(f"{self} has already adopted {child}.")
+        else:
+            self.__child.append(child)
+            child.__parent.append(self)
+
+    def abandon(self, child: Unit) -> None:
+        if child is self:
+            raise ValueError(f"{self} cannot abandon itself.")
+        elif child not in self.__child:
+            raise ValueError(f"{self} is not a parent of {child}.")
+        else:
+            self.__child.remove(child)
+            child.__parent.remove(self)
+
+    def join(self, parent: Unit) -> None:
+        if parent is self:
+            raise ValueError(f"{self} cannot join itself.")
+        elif parent in self.__parent:
+            raise ValueError(f"{self} has already joined {parent}.")
+        else:
+            self.__parent.append(parent)
+            parent.__child.append(self)
+
+    def leave(self, parent: Unit) -> None:
+        if parent is self:
+            raise ValueError(f"{self} cannot leave itself.")
+        elif parent not in self.__parent:
+            raise ValueError(f"{self} is not a child of {parent}.")
+        else:
+            self.__parent.remove(parent)
+            parent.__child.remove(self)
 
 
-class Task:
-    def __init__(
-        self,
-        name: str = "(Unnamed task)",
-        goal: str = "(No goal provided)",
-        desc: str = "(No description provided)",
-    ) -> None:
-        """"""
-        self.__id: str = self.setid()
-        self.name: str = name
-        self.goal: str = goal
-        self.desc: str = desc
-        self.isstarted: bool = False
-        self.isfinished: bool = False
-        self.plan: list[date, date] = [None, None]
-        self.duration: list[date, date] = [None, None]
-        self.parentof: list = []
-        self.childof: list = []
-
-    def __str__(self) -> str:
-        return self.name
-
-    def info(self) -> dict:
-        return {"type": "Task", "name": self.name, "goal": self.goal, "id": self.__id}
-
-    def setid(self) -> str:
-        from random import choices
-        from string import ascii_letters, digits
-
-        l = ascii_letters + digits + "-_."
-        return "tk-" + "".join(choices(l, k=12))
-
-    def showid(self) -> str:
-        return self.__id
+class Task(UnitBase):
+    pass
 
 
-if __name__ == "__main__":
-    taska = Task("A task", "A goal", "A description")
-    taskb = Task("Bnother task", "Bnother goal", "Bnother description")
-    proja = Project("A project", "A goal", "A description")
-    projb = Project("Bnother project", "Bnother goal", "Bnother description")
-    usera = User("Sato Tailor")
-    userb = User("Suzuki Gyro")
+class Project(UnitBase):
+    pass
+
+
+class User(UnitBase):
+    pass
+
+
+class Team(UnitBase):
+    pass
+
+
+def give_id(target: Union[Task, Project, Team, User], datapool=path_id_json):
+    """give a unique id to Task, Project, Team, or User.
+    The id pool can be configured."""
+
+    setting = {"file": datapool, "mode": "r", "encoding": "utf-8"}
+
+    if type(target) not in (Task, Project, Team, User):
+        raise TypeError
+    else:
+        from json import load
+
+    if type(target) == Task:
+        with open(**setting) as f:
+            d = load(fp=f)
+            l = d["task"]
+            s = l[-1].removeprefix("tk-")
+            i = int(s) + 1
+            return f"tk-{str(i).zfill(12)}"
+
+    elif type(target) == Project:
+        pass
+    elif type(target) == User:
+        pass
+    elif type(target) == Team:
+        pass
